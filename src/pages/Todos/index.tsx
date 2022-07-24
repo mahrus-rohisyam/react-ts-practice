@@ -1,18 +1,31 @@
 import React, { useState } from "react";
-import { CFooter, CHeader } from "../../components";
+import { CFooter, CHeader, CTask } from "../../components";
 import { ITask } from "../../interfaces";
 
 const Index: React.FC = () => {
   const [task, setTask] = useState<string>("");
   const [todoList, setTodoList] = useState<ITask[]>([]);
 
-  console.log(task);
-
-  const handleAddTask = () => {
+  const handleAddTask = async () => {
     const newTask = { id: Date.now(), task: task, isDone: false };
-    console.log(newTask)
-    // setTodoList([...todoList, newTask]);
-    setTask('')
+    setTodoList([...todoList, newTask]);
+    setTask("");
+    await console.log(todoList);
+  };
+
+  const handleCompleteTask = async (parameterID: number) => {
+    const data = todoList;
+    setTodoList(
+      data.map((v) => {
+        if (v.id === parameterID) {
+          v.isDone = !v.isDone;
+          return v;
+        } else {
+          return v;
+        }
+      })
+    );
+    await console.log(data);
   };
 
   return (
@@ -32,7 +45,26 @@ const Index: React.FC = () => {
               setTask(inputText.target.value);
             }}
           />
-          <button onClick={handleAddTask} type="submit">Add Task</button>
+          {task.length > 5 && (
+            <button onClick={handleAddTask} type="submit">
+              Add Task
+            </button>
+          )}
+        </div>
+        <div>
+          {todoList.length > 0
+            ? todoList.map((task: ITask, i) => {
+                return (
+                  <CTask
+                    task={task}
+                    id={i + 1}
+                    checkTask={() => {
+                      handleCompleteTask(task.id);
+                    }}
+                  />
+                );
+              })
+            : "There is no any Data :("}
         </div>
       </div>
 
